@@ -1,9 +1,18 @@
 #!/bin/sh
 
-# TODO: handle "#!/usr/bin/env foo" somehow
 while read filename; do
     # common cases 
-    sed -n -e '1s:^#![[:space:]]*\(/[^[:space:]]\{1,\}\).*:\1:p' "$filename"
-    #!/usr/bin/env /foo/bar
-    sed -n -e '1s:^#![[:space:]]*[^[:space:]]*/bin/env[[:space:]]\{1,\}\(/[^[:space:]]\{1,\}\):\1:p' "$filename"
+    INTERP=$(sed -n -e '1s:^#![[:space:]]*\(/[^[:space:]]\{1,\}\).*:\1:p' "$filename")
+    case $INTERP in
+    *bin/env*)
+        # Echo /usr/bin/env, as technically, the program won't run without it
+        echo "/usr/bin/env"
+        #!/usr/bin/env foo
+        arg=$(head -n 1 $filename | grep '^#!' | sed -e 's/^\#\![   ]*//' | cut -d" " -f2)
+        INTERP=$(command -v $arg 2>/dev/null || echo $INTERP)
+        ;;
+    *)
+        echo $INTERP
+        ;;
+    esac
 done
