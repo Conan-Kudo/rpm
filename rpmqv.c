@@ -88,6 +88,13 @@ int main(int argc, char *argv[])
     int i;
 #endif
 
+    setprogname(argv[0]);	/* Retrofit glibc __progname */
+    /* XXX glibc churn sanity */
+    if (__progname == NULL) {
+	if ((__progname = strrchr(argv[0], '/')) != NULL) __progname++;
+	else __progname = argv[0];
+    }
+
     optCon = rpmcliInit(argc, argv, optionsTable);
 
     /* Set the major mode based on argv[0] */
@@ -236,7 +243,11 @@ int main(int argc, char *argv[])
 		 "and erasure"));
 #endif	/* IAM_RPMEIU */
 
+#ifdef __EMX__
+    if (rpmcliRootDir && rpmcliRootDir[0] != '/' && rpmcliRootDir[1] != ':') {
+#else
     if (rpmcliRootDir && rpmcliRootDir[0] != '/') {
+#endif
 	argerror(_("arguments to --root (-r) must begin with a /"));
     }
 

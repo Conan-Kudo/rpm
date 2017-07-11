@@ -159,7 +159,7 @@
 %_builddir		%{_topdir}/BUILD
 
 #	The interpreter used for build scriptlets.
-%_buildshell		/bin/sh
+%_buildshell		/@unixroot/usr/bin/sh
 
 #	The path to the bzip2 executable (legacy, use %{__bzip2} instead).
 %_bzip2bin		%{__bzip2}
@@ -202,6 +202,9 @@ package or when debugging this package.\
 
 %_defaultdocdir		%{_datadir}/doc
 %_defaultlicensedir	%{_datadir}/licenses
+
+# The default directory for package documentation.
+%_pkgdocdir %{_docdir}/%{name}-%{version}
 
 #	The path to the gzip executable (legacy, use %{__gzip} instead).
 %_gzipbin		%{__gzip}
@@ -297,7 +300,7 @@ package or when debugging this package.\
 
 #	The PATH put into the environment before running %pre/%post et al.
 #
-%_install_script_path	/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin
+#%_install_script_path
 
 #	A colon separated list of desired locales to be installed;
 #	"all" means install all locale specific files.
@@ -457,7 +460,7 @@ package or when debugging this package.\
 %_filter_GLIBC_PRIVATE			0
 
 # Directories whose contents should be considered as documentation.
-%__docdir_path %{_datadir}/doc:%{_datadir}/man:%{_datadir}/info:%{_datadir}/gtk-doc/html:%{?_docdir}:%{?_mandir}:%{?_infodir}:%{?_javadocdir}:/usr/doc:/usr/man:/usr/info:/usr/X11R6/man
+%__docdir_path %{_datadir}/doc:%{_datadir}/man:%{_datadir}/info:%{_datadir}/gtk-doc/html:%{?_docdir}:%{?_mandir}:%{?_infodir}:%{?_javadocdir}:/@unixroot/usr/doc:/@unixroot/usr/man:/@unixroot/usr/info
 
 #
 # Path to scripts to autogenerate package dependencies,
@@ -646,7 +649,7 @@ package or when debugging this package.\
 #	Global defaults used for building scriptlet templates.
 #
 
-%___build_shell		%{?_buildshell:%{_buildshell}}%{!?_buildshell:/bin/sh}
+%___build_shell		%{?_buildshell:%{_buildshell}}%{!?_buildshell:/@unixroot/usr/bin/sh}
 %___build_args		-e
 %___build_cmd		%{?_sudo:%{_sudo} }%{?_remsh:%{_remsh} %{_remhost} }%{?_remsudo:%{_remsudo} }%{?_remchroot:%{_remchroot} %{_remroot} }%{___build_shell} %{___build_args}
 %___build_pre	\
@@ -674,6 +677,9 @@ package or when debugging this package.\
   \
   %{verbose:set -x}%{!verbose:exec > /dev/null}\
   umask 022\
+  export SHELL=%_bindir/sh.exe\
+  export CONFIG_SHELL=$SHELL\
+  export MAKESHELL=$SHELL\
   cd \"%{u2p:%{_builddir}}\"\
 
 
@@ -821,9 +827,9 @@ package or when debugging this package.\
 %_sbindir		%{_exec_prefix}/sbin
 %_libexecdir		%{_exec_prefix}/libexec
 %_datadir		%{_prefix}/share
-%_sysconfdir		/etc
+%_sysconfdir		@sysconfdir@
 %_sharedstatedir	%{_prefix}/com
-%_localstatedir		%{_prefix}/var
+%_localstatedir		@localstatedir@
 %_lib			lib
 %_libdir		%{_exec_prefix}/%{_lib}
 %_includedir		%{_prefix}/include
@@ -1079,6 +1085,14 @@ done \
 %__transaction_selinux		%{__plugindir}/selinux.so
 %__transaction_syslog		%{__plugindir}/syslog.so
 %__transaction_ima		%{__plugindir}/ima.so
+
+#------------------------------------------------------------------------
+# OS/2 file unlocking mode (used for unlocking loaded DLLs etc):
+#   0 - automatic handling (default)
+#   1 - use config.sys driver only
+#   2 - do nothing, report error
+#
+%_os2_unlock_mode       0
 
 #------------------------------------------------------------------------------
 # Macros for further automated spec %setup and patch application

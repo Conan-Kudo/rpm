@@ -437,7 +437,15 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 	    rc = rpmNoGlob(*eiu->fnp, &ac, &av);
 	} else {
 	    char * fn = rpmEscapeSpaces(*eiu->fnp);
-	    rc = rpmGlob(fn, &ac, &av);
+	    // check if it is a full path
+	    if (fn[0] != '/' && fn[1] != ':') {
+	        char _fullpath[_MAX_PATH];
+	        // convert to full path because chroot() changes default dir.
+	        _realrealpath( fn, _fullpath, sizeof( _fullpath));
+	        rc = rpmGlob(_fullpath, &ac, &av);
+	    } else {
+	        rc = rpmGlob(fn, &ac, &av);
+	    }
 	    fn = _free(fn);
 	}
 	if (rc || ac == 0) {

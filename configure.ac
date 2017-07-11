@@ -49,7 +49,12 @@ if test "$GCC" = yes; then
         ],[])
         CFLAGS=$old_cflags
     done
-    CFLAGS="$CFLAGS -fPIC -DPIC -D_REENTRANT -Wall -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes $RPMCFLAGS"
+    case "$host" in
+        *os2*) ;;
+        *)
+           CFLAGS="$CFLAGS -fPIC -DPIC" ;;
+    esac
+    CFLAGS="$CFLAGS -D_REENTRANT -Wall -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes $RPMCFLAGS"
 fi
 export CFLAGS
 
@@ -66,10 +71,10 @@ a=`ls -l foo.chmodtest | awk '{print substr($1,1,10)}'`
 rm -f foo.chmodtest
 if test "$a" = "-rwxr-xr-x"; then
     AC_MSG_RESULT(yes)
-    FIXPERMS=a+rX,u+w,g-w,o-w 
+    FIXPERMS=a+rX,u+w,g-w,o-w
 else
     AC_MSG_RESULT(no (tell your OS vendor about GNU fileutils))
-    FIXPERMS=a+r,u+w,g-w,o-w 
+    FIXPERMS=a+r,u+w,g-w,o-w
 fi
 AC_SUBST(FIXPERMS)
 
@@ -127,7 +132,7 @@ AC_MSG_CHECKING(old version of patch)
 
 AC_PATH_PROG(__PERL, perl, /usr/bin/perl, $MYPATH)
 AC_PATH_PROG(__PGP, pgp, /usr/bin/pgp, $MYPATH)
-AC_PATH_PROG(__PYTHON, python, /usr/bin/python, $MYPATH) 
+AC_PATH_PROG(__PYTHON, python, /usr/bin/python, $MYPATH)
 AC_PATH_PROG(__RM, rm, /bin/rm, $MYPATH)
 AC_PATH_PROG(__RSH, rsh, /usr/bin/rsh, $MYPATH)
 AC_PATH_PROG(__SED, sed, /bin/sed, $MYPATH)
@@ -151,7 +156,7 @@ AM_CONDITIONAL(HAVE_FAKECHROOT, [test "$__FAKECHROOT" != "no"])
 
 dnl see if we have a mkdir that supports `-p' for rpmbuild's purposes
 AC_PROG_MKDIR_P
-if ! echo $MKDIR_P | grep -q mkdir; then 
+if ! echo $MKDIR_P | grep -q mkdir; then
   __MKDIR_P="`echo ${prefix}/lib/rpm/mkinstalldirs`"
 else
   __MKDIR_P=$MKDIR_P
@@ -162,7 +167,7 @@ AC_DEFINE_UNQUOTED(__MKDIR_P, "${__MKDIR_P}",
 AC_SUBST(__MKDIR_P)
 
 #=================
-# Check for zlib library. 
+# Check for zlib library.
 
 WITH_ZLIB_INCLUDE=
 WITH_ZLIB_LIB=
@@ -170,7 +175,7 @@ WITH_ZLIB_LIB=
 AC_CHECK_HEADERS([zlib.h],[
   AS_IF([test -z "${WITH_ZLIB_LIB}"],[
     for zlib in z gz ; do
-      AC_CHECK_LIB(${zlib}, gzread, 
+      AC_CHECK_LIB(${zlib}, gzread,
 	[WITH_ZLIB_LIB="-l${zlib}"; break])
     done
 
@@ -263,7 +268,7 @@ if test "$with_beecrypt" = yes ; then
     AC_CHECK_LIB(beecrypt, mpfprintln, [
       WITH_BEECRYPT_LIB="-lbeecrypt"
     ],[
-      AC_MSG_ERROR([missing required library 'beecrypt']) 
+      AC_MSG_ERROR([missing required library 'beecrypt'])
     ])
     AC_CHECK_HEADER([beecrypt/api.h], [AC_DEFINE(HAVE_BEECRYPT_API_H, 1, [Define to 1 if you have the <beecrypt/api.h> header file.])
     ])
@@ -274,8 +279,8 @@ AC_SUBST(WITH_BEECRYPT_INCLUDE)
 
 #=================
 # Check for NSS library.
-# We need nss.h from NSS which needs nspr.h. Unfortunately both glibc and NSS 
-# have a header named nss.h... so make extra check for NSS's sechash.h 
+# We need nss.h from NSS which needs nspr.h. Unfortunately both glibc and NSS
+# have a header named nss.h... so make extra check for NSS's sechash.h
 # which we use too and hopefully is slightly more unique to NSS.
 WITH_NSS_INCLUDE=
 WITH_NSS_LIB=
@@ -306,10 +311,10 @@ AC_CHECK_HEADER([magic.h], [
       WITH_MAGIC_INCLUDE=
       WITH_MAGIC_LIB="-lmagic"
     ],[
-      AC_MSG_ERROR([missing required library 'libmagic']) 
+      AC_MSG_ERROR([missing required library 'libmagic'])
     ])
 ],[
-      AC_MSG_ERROR([missing required header magic.h]) 
+      AC_MSG_ERROR([missing required header magic.h])
 ])
 
 AC_SUBST(WITH_MAGIC_INCLUDE)
@@ -378,7 +383,7 @@ yes )
 	#error Berkeley DB too old
 	#endif
       ])
-    ],[ WITH_DB_LIB=-ldb ], 
+    ],[ WITH_DB_LIB=-ldb ],
       [ AC_MSG_ERROR([Berkeley DB version >= 4.5 required])
     ])
   ],[
@@ -726,7 +731,7 @@ esac],
 [with_acl=no])
 
 AS_IF([test "$with_acl" = yes],[
-  dnl verification uses non-portable acl_equiv_mode() 
+  dnl verification uses non-portable acl_equiv_mode()
   AC_CHECK_HEADER([acl/libacl.h],[
     AC_CHECK_LIB(acl,[acl_equiv_mode],[with_acl=yes],[
       AC_MSG_ERROR([--with-acl given, but libacl not found or not suitable])])
@@ -803,11 +808,11 @@ changequote([, ])
 
 dnl permit overriding build_vendor for "canonical rpm vendor"
 RPMCANONVENDOR="$build_vendor"
-AC_ARG_WITH([vendor], 
+AC_ARG_WITH([vendor],
   AS_HELP_STRING([--with-vendor=VENDOR], [specify rpm vendor name]),
   [RPMCANONVENDOR=$withval])
 AC_DEFINE_UNQUOTED([RPMCANONVENDOR],["${RPMCANONVENDOR}"],[canonical vendor])
-	   
+
 RPMCANONOS="$host_os_noversion"
 RPMCANONGNU="$host_os_gnu"
 AC_SUBST(RPMCANONVENDOR)
@@ -815,7 +820,7 @@ AC_SUBST(RPMCANONOS)
 AC_SUBST(RPMCANONGNU)
 
 RUNDIR="/run"
-AC_ARG_WITH([rundir], 
+AC_ARG_WITH([rundir],
   AS_HELP_STRING([--with-rundir=RUNDIR], [specify run-time variable directory]),
   [RUNDIR=$withval])
 AC_DEFINE_UNQUOTED([RUNDIR],["${RUNDIR}"],[run-time variable directory])
@@ -847,7 +852,7 @@ AC_SUBST([dirstamp],[\${am__leading_dot}dirstamp])
 AC_CONFIG_FILES([Makefile
 	rpmio/Makefile lib/Makefile build/Makefile sign/Makefile
 	po/Makefile.in scripts/Makefile fileattrs/Makefile
-	misc/Makefile 
+	misc/Makefile
 	doc/Makefile
 	python/Makefile
  	luaext/Makefile

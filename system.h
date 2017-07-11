@@ -87,6 +87,7 @@ char * stpncpy(char * dest, const char * src, size_t n);
 #define _free(_ptr) rfree((_ptr))
 
 /* Retrofit glibc __progname */
+#if !defined(__KLIBC__)
 #if defined __GLIBC__ && __GLIBC__ >= 2
 #if __GLIBC_MINOR__ >= 1
 #define	__progname	__assert_program_name
@@ -99,6 +100,7 @@ char * stpncpy(char * dest, const char * src, size_t n);
     else __progname = pn;		\
   }
 #endif
+#endif // __KLIBC__
 extern const char *__progname;
 
 /* Take care of NLS matters.  */

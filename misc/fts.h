@@ -38,7 +38,9 @@
 #include <features.h>
 #else
 
+#ifndef __KLIBC__
 #   define __THROW
+#endif
 
 #if !defined(_LARGEFILE64_SOURCE)
 # define	_LARGEFILE64_SOURCE

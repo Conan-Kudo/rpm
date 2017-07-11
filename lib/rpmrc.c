@@ -20,6 +20,11 @@
 #define __power_pc() 0
 #endif
 
+#ifdef __KLIBC__
+#define INCL_DOS
+#include <os2.h>
+#endif
+
 #ifdef HAVE_SYS_AUXV_H
 #include <sys/auxv.h>
 #endif
@@ -463,15 +468,19 @@ static void setDefaults(void)
     }
 
 #ifndef MACROFILES
+    // @FIXME FIXME TODO YD this breaks upgrades...
+    // hardcoded in macrofiles listing (ticket#135)
     if (!macrofiles) {
 	macrofiles = rstrscat(NULL, confdir, "/macros", ":",
 				confdir, "/macros.d/macros.*", ":",
 				confdir, "/platform/%{_target}/macros", ":",
+				confdir, "/platform/%{_target_cpu}-os2-emx/macros", ":",
 				confdir, "/fileattrs/*.attr", ":",
   				confdir, "/" RPMCANONVENDOR "/macros", ":",
 				SYSCONFDIR "/rpm/macros.*", ":",
 				SYSCONFDIR "/rpm/macros", ":",
 				SYSCONFDIR "/rpm/%{_target}/macros", ":",
+				SYSCONFDIR "/rpm/%{_target_cpu}-os2-emx/macros", ":",
 				"~/.rpmmacros", NULL);
     }
 #else
@@ -500,7 +509,7 @@ static rpmRC doReadRC(rpmrcCtx ctx, const char * urlfn)
 	s = se = next;
 
 	/* Find end-of-line. */
-	while (*se && *se != '\n') se++;
+	while (*se && *se != '\r' && *se != '\n') se++;
 	if (*se != '\0') *se++ = '\0';
 	next = se;
 
@@ -1025,6 +1034,13 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 	    strcpy(un.machine, __power_pc() ? "ppc" : "rs6000");
 	    sprintf(un.sysname,"aix%s.%s", un.version, un.release);
 	}
+	// @FIXME FIXME TODO YD this breaks upgrades...
+	// hardcoded in macrofiles listing (ticket#135)
+#if 0
+	else if(rstreq(un.sysname, "OS/2")) { 
+	    strcpy(un.sysname, "os2-emx");
+	}
+#endif
 	else if(rstreq(un.sysname, "Darwin")) { 
 #ifdef __ppc__
 	    strcpy(un.machine, "ppc");
@@ -1278,6 +1294,7 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 			   ctx->tables[RPM_MACHTABLE_INSTOS].canonsLength);
 	if (canon)
 	    rstrlcpy(un.sysname, canon->short_name, sizeof(un.sysname));
+
 	ctx->machDefaults = 1;
 	break;
     }

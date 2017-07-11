@@ -101,7 +101,7 @@ int parseScript(rpmSpec spec, int parsePart)
     const char **argv = NULL;
     poptContext optCon = NULL;
     const char *name = NULL;
-    const char *prog = "/bin/sh";
+    const char *prog = "/@unixroot/usr/bin/sh";
     const char *file = NULL;
     int priority = 1000000;
     struct poptOption optionsTable[] = {

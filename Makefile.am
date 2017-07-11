@@ -100,8 +100,7 @@ bin_PROGRAMS += 	rpm2archive
 endif
 
 rpmlibexec_PROGRAMS =
-rpmconfig_SCRIPTS =	mkinstalldirs \
-			config.guess config.sub
+rpmconfig_SCRIPTS =	config.guess config.sub
 
 noinst_LTLIBRARIES = 		libcliutils.la
 libcliutils_la_SOURCES = 	cliutils.h cliutils.c
@@ -177,6 +176,10 @@ endif
 rpmlibexec_PROGRAMS +=	rpmdeps
 rpmdeps_SOURCES =	tools/rpmdeps.c
 rpmdeps_LDADD =		lib/librpm.la rpmio/librpmio.la build/librpmbuild.la @WITH_POPT_LIB@
+
+rpmlibexec_PROGRAMS +=	os2deps
+os2deps_SOURCES =	tools/os2deps.c
+os2deps_LDADD =		@WITH_POPT_LIB@
 
 bin_PROGRAMS +=		rpmgraph
 rpmgraph_SOURCES =	tools/rpmgraph.c

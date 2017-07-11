@@ -69,8 +69,8 @@ HASHTYPE HASHPREFIX(Create)(int numBuckets,
     HASHTYPE ht;
 
     ht = xmalloc(sizeof(*ht));
-    ht->numBuckets = numBuckets > 11 ? numBuckets : 11;
-    ht->buckets = xcalloc(ht->numBuckets, sizeof(*ht->buckets));
+    ht->numBuckets = numBuckets;
+    ht->buckets = xcalloc(numBuckets, sizeof(*ht->buckets));
     ht->freeKey = freeKey;
 #ifdef HTDATATYPE
     ht->freeData = freeData;
@@ -142,8 +142,6 @@ void HASHPREFIX(AddHEntry)(HASHTYPE ht, HTKEYTYPE key, unsigned int keyHash
     }
 #ifdef HTDATATYPE
     else {
-	if (ht->freeKey)
-	    ht->freeKey(key);
 	// resizing bucket TODO: increase exponentially
 	// Bucket_s already contains space for one dataset
 	b = *b_addr = xrealloc(

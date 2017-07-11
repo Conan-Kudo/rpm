@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# TODO fix this script to accept $2 instead of stdin
+# re-read file to stdin...
+exec 0<$2
+
 [ $# -ge 2 ] || {
     cat > /dev/null
     exit 0

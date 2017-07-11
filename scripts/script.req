@@ -1,6 +1,7 @@
 #!/bin/sh
 
 # TODO: handle "#!/usr/bin/env foo" somehow
+cat $1 | 
 while read filename; do
     # common cases 
     sed -n -e '1s:^#![[:space:]]*\(/[^[:space:]]\{1,\}\).*:\1:p' "$filename"

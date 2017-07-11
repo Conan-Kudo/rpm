@@ -20,8 +20,19 @@ int main(int argc, char *argv[])
     int rc;
     off_t payload_size;
     FD_t gzdi;
+
+#ifdef __EMX__
+    _fsetmode( stdin, "b");
+    _fsetmode( stdout, "b");
+#endif
     
     setprogname(argv[0]);	/* Retrofit glibc __progname */
+    /* XXX glibc churn sanity */
+    if (__progname == NULL) {
+	if ((__progname = strrchr(argv[0], '/')) != NULL) __progname++;
+	else __progname = argv[0];
+    }
+
     rpmReadConfigFiles(NULL, NULL);
     if (argc == 1)
 	fdi = fdDup(STDIN_FILENO);

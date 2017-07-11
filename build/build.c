@@ -4,6 +4,10 @@
  */
 
 #include "system.h"
+#ifdef __EMX__
+#include <process.h>
+#include <fcntl.h>
+#endif
 
 #include <errno.h>
 #include <sys/wait.h>
@@ -127,7 +131,10 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 	rc = RPMRC_FAIL;
 	goto exit;
     }
-    
+
+//CHECKME    
+    if (*spec->rootDir == '\0') spec->rootDir = "/@unixroot";
+
     buildTemplate = rpmExpand(mTemplate, NULL);
     buildPost = rpmExpand(mPost, NULL);
 
@@ -150,7 +157,11 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 	goto exit;
     }
     
-    if (buildDir && buildDir[0] != '/') {
+    if (buildDir && buildDir[0] != '/'
+#ifdef __EMX__
+	 && buildDir[1] != ':'
+#endif
+	) {
 	rc = RPMRC_FAIL;
 	goto exit;
     }
@@ -159,6 +170,13 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
     (void) poptParseArgvString(buildCmd, &argc, &argv);
 
     rpmlog(RPMLOG_NOTICE, _("Executing(%s): %s\n"), name, buildCmd);
+#ifdef __EMX__
+    child = spawnvp(P_NOWAIT, argv[0], (char *const *)argv);
+    if (child == -1)
+	// waitpid will fail too!
+	rpmlog(RPMLOG_ERR, _("Exec of %s failed (%s): %s\n"),
+		scriptName, name, strerror(errno));
+#else
     if (!(child = fork())) {
 	/* NSPR messes with SIGPIPE, reset to default for the kids */
 	signal(SIGPIPE, SIG_DFL);
@@ -170,6 +188,7 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 
 	_exit(127); /* exit 127 for compatibility with bash(1) */
     }
+#endif
 
     pid = waitpid(child, &status, 0);
 
