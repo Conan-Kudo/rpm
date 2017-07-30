@@ -167,7 +167,6 @@ static int db_init(rpmdb rdb, const char * dbhome)
 	rpmlog(RPMLOG_DEBUG, "opening  db environment %s eflags=%s perms=0%o\n", dbhome, _EnvF(eflags), rdb->db_perms);
 
 	eflags = 0;
-	eflags |= MDB_FIXEDMAP;
 	eflags |= MDB_WRITEMAP;
 	eflags |= MDB_MAPASYNC;
 	eflags |= MDB_NOTLS;
