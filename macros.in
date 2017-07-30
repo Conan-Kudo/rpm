@@ -610,6 +610,7 @@ package or when debugging this package.\
 # Select backend database. The following values are supported:
 # bdb Berkeley DB
 # ndb new data base format
+# lmdb Lightning Memory-mapped Database
 #
 %_db_backend	      bdb
 
