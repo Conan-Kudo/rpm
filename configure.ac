@@ -432,7 +432,7 @@ enable_lmdb=no
 RPM_CHECK_LIB(
     [LMDB], [lmdb],
     [lmdb], [mdb_env_open], [lmdb.h],
-    [no,internal:external:none], [lmdb/libraries/liblmdb],
+    [yes,external:none], [lmdb/libraries/liblmdb],
     [
         enable_lmdb=yes
         AC_DEFINE(ENABLE_LMDB, 1, [Enable lmdb database format?])
