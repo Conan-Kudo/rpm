@@ -417,6 +417,29 @@ AC_SUBST(WITH_MAGIC_INCLUDE)
 AC_SUBST(WITH_MAGIC_LIB)
 
 #=================
+# Check for uuid library.
+RPM_CHECK_LIB(
+    [OSSP uuid], [uuid],
+    [ossp-uuid], [uuid_import], [uuid.h],
+    [no,system:none], [],
+    [
+    ], [])
+
+#=================
+# Check for lmdb library.
+dnl # LMDB
+enable_lmdb=no
+RPM_CHECK_LIB(
+    [LMDB], [lmdb],
+    [lmdb], [mdb_env_open], [lmdb.h],
+    [no,internal:external:none], [lmdb/libraries/liblmdb],
+    [
+        enable_lmdb=yes
+        AC_DEFINE(ENABLE_LMDB, 1, [Enable lmdb database format?])
+    ], [])
+AM_CONDITIONAL([LMDB], [test "$enable_lmdb" = yes])
+
+#=================
 # Check for popt library.
 WITH_POPT_INCLUDE=
 WITH_POPT_LIB=
