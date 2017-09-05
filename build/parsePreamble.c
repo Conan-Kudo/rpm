@@ -519,7 +519,9 @@ static struct optionalTag {
 } const optionalTags[] = {
     { RPMTAG_VENDOR,		"%{vendor}" },
     { RPMTAG_PACKAGER,		"%{packager}" },
+    { RPMTAG_DISTEPOCH,         "%{distepoch}" },
     { RPMTAG_DISTRIBUTION,	"%{distribution}" },
+    { RPMTAG_DISTTAG,           "%{disttag}" },
     { RPMTAG_DISTURL,		"%{disturl}" },
     { RPMTAG_BUGURL,		"%{bugurl}" },
     { -1, NULL }
@@ -970,6 +972,7 @@ static struct PreambleRec_s const preambleList[] = {
     {RPMTAG_NAME,		0, 0, LEN_AND_STR("name")},
     {RPMTAG_VERSION,		0, 0, LEN_AND_STR("version")},
     {RPMTAG_RELEASE,		0, 0, LEN_AND_STR("release")},
+    {RPMTAG_DISTEPOCH,		0, 0, LEN_AND_STR("distepoch")},
     {RPMTAG_EPOCH,		0, 0, LEN_AND_STR("epoch")},
     {RPMTAG_SUMMARY,		1, 0, LEN_AND_STR("summary")},
     {RPMTAG_LICENSE,		0, 0, LEN_AND_STR("license")},

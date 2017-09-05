@@ -272,7 +272,7 @@ package or when debugging this package.\
 %_buildrootdir		%{_topdir}/BUILDROOT
 
 #	Build root path, where %install installs the package during build.
-%buildroot		%{_buildrootdir}/%{NAME}-%{VERSION}-%{RELEASE}.%{_arch}
+%buildroot		%{_buildrootdir}/%{NAME}-%{VERSION}-%{RELEASE}%{?disttag:.%{disttag}%{?distepoch:%{distepoch}}}.%{_arch}
 
 #	Directory where temporaray files can be created.
 %_tmppath		%{_var}/tmp
