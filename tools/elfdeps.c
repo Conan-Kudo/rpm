@@ -94,6 +94,18 @@ static const char *mkmarker(GElf_Ehdr *ehdr)
 	    break;
 	}
     }
+
+    if (ehdr->e_ident[EI_CLASS] == ELFCLASS32) {
+	switch (ehdr->e_machine) {
+	case EM_X86_64:
+	    marker = "(x32abi)";
+	    break;
+	default:
+	    /* Usually, there is no marker here */
+	    break;
+	}
+    }
+
     return marker;
 }
 
